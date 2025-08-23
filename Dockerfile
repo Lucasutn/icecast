@@ -1,16 +1,22 @@
 FROM alpine:latest
 
-# Instalar Icecast
-RUN apk add --no-cache icecast
+RUN apk add --no-cache icecast mailcap
 
-# Crear directorios necesarios
+# Crear usuario y grupo 'icecast'
+RUN addgroup -S icecast && adduser -S icecast -G icecast
+
+# Crear directorios
 RUN mkdir -p /var/log/icecast /etc/icecast /var/run/icecast
 
-# Copiar configuración
+# Copiar config
 COPY icecast.xml /etc/icecast/icecast.xml
 
-# Puerto expuesto (Railway lo va a mapear)
+# Dar permisos
+RUN chown -R icecast:icecast /var/log/icecast /var/run/icecast /etc/icecast
+
 EXPOSE 8000
 
-# Ejecutar Icecast
+# Ejecutar como usuario no-root
+USER icecast
+
 CMD ["icecast", "-c", "/etc/icecast/icecast.xml"]
