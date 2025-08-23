@@ -1,9 +1,9 @@
 FROM alpine:latest
 
-RUN apk add --no-cache icecast mailcap
+RUN apk add --no-cache icecast mailcap shadow
 
 # Crear grupo y usuario icecast
-RUN addgroup -S icecast && adduser -D -S -H -G icecast icecast
+RUN groupadd -r icecast && useradd -r -g icecast icecast
 
 # Crear directorios
 RUN mkdir -p /var/log/icecast /etc/icecast /var/run/icecast
