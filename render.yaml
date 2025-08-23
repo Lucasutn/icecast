@@ -13,4 +13,4 @@ services:
         value: 50
     healthCheckPath: /
     numInstances: 1
-    plan: starter  # Plan gratuito de Render
+    plan: free  # Plan gratuito de Render
