@@ -1,23 +1,17 @@
 <icecast>
-    <location>Render Streaming</location>
-    <admin>admin@streaming.com</admin>
+    <location>Railway Streaming</location>
+    <admin>admin@railway.com</admin>
 
     <limits>
-        <clients>50</clients>
+        <clients>100</clients>
         <sources>5</sources>
-        <queue-size>524288</queue-size>
-        <client-timeout>30</client-timeout>
-        <header-timeout>15</header-timeout>
-        <source-timeout>10</source-timeout>
-        <burst-on-connect>1</burst-on-connect>
-        <burst-size>65535</burst-size>
     </limits>
 
     <authentication>
-        <source-password>streaming123</source-password>
-        <relay-password>relay123</relay-password>
+        <source-password>${SOURCE_PASSWORD}</source-password>
+        <relay-password>${RELAY_PASSWORD}</relay-password>
         <admin-user>admin</admin-user>
-        <admin-password>admin123</admin-password>
+        <admin-password>${ADMIN_PASSWORD}</admin-password>
     </authentication>
 
     <hostname>0.0.0.0</hostname>
@@ -27,39 +21,18 @@
         <bind-address>0.0.0.0</bind-address>
     </listen-socket>
 
-    <mount type="normal">
-        <mount-name>/stream</mount-name>
-        <password>streaming123</password>
-        <max-listeners>50</max-listeners>
-        <burst-size>65536</burst-size>
-        <hidden>0</hidden>
-        <public>1</public>
-        <stream-name>Second Life Stream</stream-name>
-        <stream-description>Audio stream for Second Life</stream-description>
-        <genre>Various</genre>
-        <bitrate>128</bitrate>
-    </mount>
-
     <fileserve>1</fileserve>
 
     <paths>
         <basedir>/usr/share/icecast</basedir>
-        <logdir>/var/log/icecast2</logdir>
+        <logdir>/var/log/icecast</logdir>
         <webroot>/usr/share/icecast/web</webroot>
         <adminroot>/usr/share/icecast/admin</adminroot>
-        <pidfile>/var/run/icecast2/icecast.pid</pidfile>
-        <alias source="/" destination="/status.xsl"/>
     </paths>
 
     <logging>
         <accesslog>-</accesslog>
         <errorlog>-</errorlog>
         <loglevel>3</loglevel>
-        <logsize>10000</logsize>
-        <logarchive>0</logarchive>
     </logging>
-
-    <security>
-        <chroot>0</chroot>
-    </security>
 </icecast>

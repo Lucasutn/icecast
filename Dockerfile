@@ -1,8 +1,16 @@
 FROM alpine:latest
-RUN apk add --no-cache icecast mailcap
-RUN mkdir -p /var/log/icecast2 /etc/icecast2 /var/run/icecast2
-COPY icecast.xml /etc/icecast2/icecast.xml
-RUN chown -R icecast:icecast /var/log/icecast2 /var/run/icecast2 /etc/icecast2
+
+# Instalar Icecast
+RUN apk add --no-cache icecast
+
+# Crear directorios necesarios
+RUN mkdir -p /var/log/icecast /etc/icecast /var/run/icecast
+
+# Copiar configuración
+COPY icecast.xml /etc/icecast/icecast.xml
+
+# Puerto expuesto (Railway lo va a mapear)
 EXPOSE 8000
-USER icecast
-CMD ["icecast", "-c", "/etc/icecast2/icecast.xml"]
+
+# Ejecutar Icecast
+CMD ["icecast", "-c", "/etc/icecast/icecast.xml"]
