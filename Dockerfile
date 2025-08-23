@@ -1,9 +1,9 @@
 FROM alpine:latest
 
-# Instalar dependencias
+# Instalar Icecast y dependencias
 RUN apk add --no-cache icecast gettext curl bash
 
-# Crear directorios
+# Crear directorios necesarios  
 RUN mkdir -p /var/log/icecast2 /etc/icecast2 /var/run/icecast2
 
 # Variables de entorno
@@ -14,45 +14,94 @@ ENV ICECAST_HOSTNAME=0.0.0.0
 ENV PORT=8000
 ENV ICECAST_MAX_CLIENTS=100
 
-# Copiar template de configuración
-COPY icecast.xml.template /etc/icecast2/icecast.xml.template
+# Crear configuración XML directamente (sin template)
+RUN cat > /etc/icecast2/icecast.xml << 'EOF'
+<icecast>
+    <location>Render Streaming Server</location>
+    <admin>admin@render.com</admin>
 
-# Crear el entrypoint DIRECTAMENTE en el Dockerfile (evita problemas de formato)
-RUN cat > /entrypoint.sh << 'EOF'
-#!/bin/bash
-set -e
+    <limits>
+        <clients>100</clients>
+        <sources>10</sources>
+        <queue-size>524288</queue-size>
+        <client-timeout>30</client-timeout>
+        <header-timeout>15</header-timeout>
+        <source-timeout>10</source-timeout>
+        <burst-on-connect>1</burst-on-connect>
+        <burst-size>65535</burst-size>
+    </limits>
 
-echo "==================================="
-echo "🎵 Starting Icecast Streaming Server"
-echo "==================================="
-echo "Port: ${PORT}"
-echo "Hostname: ${ICECAST_HOSTNAME}"
-echo "Max clients: ${ICECAST_MAX_CLIENTS}"
-echo "==================================="
+    <authentication>
+        <source-password>streaming123</source-password>
+        <relay-password>relay123</relay-password>
+        <admin-user>admin</admin-user>
+        <admin-password>admin123</admin-password>
+    </authentication>
 
-# Generar configuración
-envsubst < /etc/icecast2/icecast.xml.template > /etc/icecast2/icecast.xml
+    <hostname>0.0.0.0</hostname>
 
-# Verificar archivo
-if [ ! -f /etc/icecast2/icecast.xml ]; then
-    echo "❌ Error: Configuration file not found!"
-    exit 1
-fi
+    <listen-socket>
+        <port>8000</port>
+        <bind-address>0.0.0.0</bind-address>
+    </listen-socket>
 
-echo "✅ Starting Icecast..."
-exec icecast -c /etc/icecast2/icecast.xml
+    <mount type="normal">
+        <mount-name>/stream</mount-name>
+        <password>streaming123</password>
+        <max-listeners>50</max-listeners>
+        <burst-size>65536</burst-size>
+        <fallback-override>1</fallback-override>
+        <fallback-when-full>1</fallback-when-full>
+        <hidden>0</hidden>
+        <public>1</public>
+        <stream-name>Second Life Radio Stream</stream-name>
+        <stream-description>Live audio streaming for Second Life</stream-description>
+        <stream-url>https://streaming.render.com</stream-url>
+        <genre>Various</genre>
+        <bitrate>128</bitrate>
+        <mp3-metadata-interval>8192</mp3-metadata-interval>
+    </mount>
+
+    <fileserve>1</fileserve>
+
+    <paths>
+        <basedir>/usr/share/icecast</basedir>
+        <logdir>/var/log/icecast2</logdir>
+        <webroot>/usr/share/icecast/web</webroot>
+        <adminroot>/usr/share/icecast/admin</adminroot>
+        <pidfile>/var/run/icecast2/icecast.pid</pidfile>
+        <alias source="/" destination="/status.xsl"/>
+    </paths>
+
+    <logging>
+        <accesslog>-</accesslog>
+        <errorlog>-</errorlog>
+        <loglevel>3</loglevel>
+        <logsize>10000</logsize>
+        <logarchive>0</logarchive>
+    </logging>
+
+    <security>
+        <chroot>0</chroot>
+    </security>
+</icecast>
 EOF
 
-# Dar permisos
-RUN chmod +x /entrypoint.sh && \
-    chmod -R 777 /var/log/icecast2 /var/run/icecast2 /etc/icecast2
+# Crear script de inicio simple
+RUN echo '#!/bin/bash' > /start.sh && \
+    echo 'echo "🎵 Starting Icecast on port $PORT"' >> /start.sh && \
+    echo 'exec icecast -c /etc/icecast2/icecast.xml' >> /start.sh && \
+    chmod +x /start.sh
 
-# Puerto
-EXPOSE $PORT
+# Permisos para directorios
+RUN chmod -R 777 /var/log/icecast2 /var/run/icecast2 /etc/icecast2
+
+# Exponer puerto
+EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:$PORT/ || exit 1
+    CMD curl -f http://localhost:8000/ || exit 1
 
-# Ejecutar
-CMD ["/entrypoint.sh"]
+# Comando de inicio
+CMD ["/start.sh"]
