@@ -1,0 +1,16 @@
+# render.yaml (opcional - para configuración como código)
+services:
+  - type: web
+    name: icecast-streaming
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ICECAST_SOURCE_PASSWORD
+        value: streaming123
+      - key: ICECAST_ADMIN_PASSWORD  
+        value: admin123
+      - key: ICECAST_MAX_CLIENTS
+        value: 50
+    healthCheckPath: /
+    numInstances: 1
+    plan: starter  # Plan gratuito de Render

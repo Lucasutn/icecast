@@ -1,6 +1,8 @@
+
+# icecast.xml.template
 <icecast>
-    <location>Second Life Streaming</location>
-    <admin>admin@localhost</admin>
+    <location>Second Life Streaming on Render</location>
+    <admin>admin@streaming.render.com</admin>
 
     <limits>
         <clients>${ICECAST_MAX_CLIENTS}</clients>
@@ -23,25 +25,22 @@
     <hostname>${ICECAST_HOSTNAME}</hostname>
 
     <listen-socket>
-        <port>${ICECAST_PORT}</port>
+        <port>${PORT}</port>
         <bind-address>0.0.0.0</bind-address>
     </listen-socket>
 
     <mount type="normal">
         <mount-name>/stream</mount-name>
         <password>${ICECAST_SOURCE_PASSWORD}</password>
-        <max-listeners>100</max-listeners>
-        <dump-file>/tmp/dump-example1.ogg</dump-file>
+        <max-listeners>50</max-listeners>
         <burst-size>65536</burst-size>
-        <fallback-mount>/silence.ogg</fallback-mount>
         <fallback-override>1</fallback-override>
         <fallback-when-full>1</fallback-when-full>
-        <intro>/intro.ogg</intro>
         <hidden>0</hidden>
         <public>1</public>
-        <stream-name>Second Life Stream</stream-name>
-        <stream-description>Audio stream for Second Life</stream-description>
-        <stream-url>http://localhost</stream-url>
+        <stream-name>Second Life Radio Stream</stream-name>
+        <stream-description>Live audio streaming for Second Life</stream-description>
+        <stream-url>https://streaming.render.com</stream-url>
         <genre>Various</genre>
         <bitrate>128</bitrate>
         <mp3-metadata-interval>8192</mp3-metadata-interval>
@@ -59,11 +58,11 @@
     </paths>
 
     <logging>
-        <accesslog>access.log</accesslog>
-        <errorlog>error.log</errorlog>
+        <accesslog>-</accesslog>
+        <errorlog>-</errorlog>
         <loglevel>3</loglevel>
         <logsize>10000</logsize>
-        <logarchive>1</logarchive>
+        <logarchive>0</logarchive>
     </logging>
 
     <security>
