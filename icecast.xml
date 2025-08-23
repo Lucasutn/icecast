@@ -1,45 +1,44 @@
 <icecast>
-<security>
-  <changeowner>
-    <user>icecast</user>
-    <group>icecast</group>
-  </changeowner>
-</security>
+  <location>Railway Streaming</location>
+  <admin>admin@railway.com</admin>
 
-    <location>Railway Streaming</location>
-    <admin>admin@railway.com</admin>
+  <limits>
+    <clients>50</clients>
+    <sources>5</sources>
+  </limits>
 
-    <limits>
-        <clients>100</clients>
-        <sources>5</sources>
-    </limits>
+  <authentication>
+    <source-password>${SOURCE_PASSWORD}</source-password>
+    <relay-password>${RELAY_PASSWORD}</relay-password>
+    <admin-user>admin</admin-user>
+    <admin-password>${ADMIN_PASSWORD}</admin-password>
+  </authentication>
 
-    <authentication>
-        <source-password>${SOURCE_PASSWORD}</source-password>
-        <relay-password>${RELAY_PASSWORD}</relay-password>
-        <admin-user>admin</admin-user>
-        <admin-password>${ADMIN_PASSWORD}</admin-password>
-    </authentication>
+  <hostname>0.0.0.0</hostname>
 
-    <hostname>0.0.0.0</hostname>
+  <listen-socket>
+    <port>8000</port>
+    <bind-address>0.0.0.0</bind-address>
+  </listen-socket>
 
-    <listen-socket>
-        <port>8000</port>
-        <bind-address>0.0.0.0</bind-address>
-    </listen-socket>
+  <paths>
+    <basedir>/usr/share/icecast</basedir>
+    <logdir>/var/log/icecast</logdir>
+    <webroot>/usr/share/icecast/web</webroot>
+    <adminroot>/usr/share/icecast/admin</adminroot>
+  </paths>
 
-    <fileserve>1</fileserve>
+  <security>
+    <chroot>0</chroot>
+    <changeowner>
+      <user>nobody</user>
+      <group>nogroup</group>
+    </changeowner>
+  </security>
 
-    <paths>
-        <basedir>/usr/share/icecast</basedir>
-        <logdir>/var/log/icecast</logdir>
-        <webroot>/usr/share/icecast/web</webroot>
-        <adminroot>/usr/share/icecast/admin</adminroot>
-    </paths>
-
-    <logging>
-        <accesslog>-</accesslog>
-        <errorlog>-</errorlog>
-        <loglevel>3</loglevel>
-    </logging>
+  <logging>
+    <accesslog>-</accesslog>
+    <errorlog>-</errorlog>
+    <loglevel>3</loglevel>
+  </logging>
 </icecast>
