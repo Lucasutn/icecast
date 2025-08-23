@@ -1,44 +1,58 @@
 FROM alpine:latest
 
-# Instalar Icecast y dependencias
-RUN apk add --no-cache \
-    icecast \
-    gettext \
-    curl \
-    bash \
-    && mkdir -p /var/log/icecast2 /etc/icecast2 /var/run/icecast2
+# Instalar dependencias
+RUN apk add --no-cache icecast gettext curl bash
 
-# Verificar si el usuario icecast existe, si no, crearlo
-RUN id icecast 2>/dev/null || adduser -D -s /bin/sh icecast
+# Crear directorios
+RUN mkdir -p /var/log/icecast2 /etc/icecast2 /var/run/icecast2
 
-# Copiar archivos de configuración
-COPY icecast.xml.template /etc/icecast2/icecast.xml.template
-COPY entrypoint.sh /entrypoint.sh
-
-# Hacer ejecutable el script
-RUN chmod +x /entrypoint.sh
-
-# Asegurar permisos correctos
-RUN chown -R icecast:icecast /var/log/icecast2 /var/run/icecast2 /etc/icecast2 2>/dev/null || \
-    chown -R icecast /var/log/icecast2 /var/run/icecast2 /etc/icecast2
-
-# Variables de entorno por defecto
+# Variables de entorno
 ENV ICECAST_SOURCE_PASSWORD=streaming123
-ENV ICECAST_RELAY_PASSWORD=relay123
+ENV ICECAST_RELAY_PASSWORD=relay123  
 ENV ICECAST_ADMIN_PASSWORD=admin123
 ENV ICECAST_HOSTNAME=0.0.0.0
 ENV PORT=8000
 ENV ICECAST_MAX_CLIENTS=100
 
-# Exponer puerto
+# Copiar template de configuración
+COPY icecast.xml.template /etc/icecast2/icecast.xml.template
+
+# Crear el entrypoint DIRECTAMENTE en el Dockerfile (evita problemas de formato)
+RUN cat > /entrypoint.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "==================================="
+echo "🎵 Starting Icecast Streaming Server"
+echo "==================================="
+echo "Port: ${PORT}"
+echo "Hostname: ${ICECAST_HOSTNAME}"
+echo "Max clients: ${ICECAST_MAX_CLIENTS}"
+echo "==================================="
+
+# Generar configuración
+envsubst < /etc/icecast2/icecast.xml.template > /etc/icecast2/icecast.xml
+
+# Verificar archivo
+if [ ! -f /etc/icecast2/icecast.xml ]; then
+    echo "❌ Error: Configuration file not found!"
+    exit 1
+fi
+
+echo "✅ Starting Icecast..."
+exec icecast -c /etc/icecast2/icecast.xml
+EOF
+
+# Dar permisos
+RUN chmod +x /entrypoint.sh && \
+    chmod -R 777 /var/log/icecast2 /var/run/icecast2 /etc/icecast2
+
+# Puerto
 EXPOSE $PORT
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:$PORT/ || exit 1
 
-# Usar el usuario icecast si existe, si no, usar root (para compatibilidad)
-USER icecast
-
-# Comando de inicio
+# Ejecutar
 CMD ["/entrypoint.sh"]
