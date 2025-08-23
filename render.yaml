@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: icecast-server
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /status-json.xsl
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: ICECAST_SOURCE_PASSWORD
+        sync: false
+      - key: ICECAST_ADMIN_PASSWORD
+        sync: false
+      - key: ICECAST_RELAY_PASSWORD
+        sync: false
+      - key: ICECAST_HOSTNAME
+        fromService:
+          type: web
+          name: icecast-server
+          property: host

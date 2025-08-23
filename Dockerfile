@@ -1,14 +1,23 @@
-FROM alpine:latest
+FROM ubuntu:22.04
 
-RUN apk add --no-cache icecast mailcap
+# Install Icecast and required dependencies
+RUN apt-get update && apt-get install -y \
+    icecast2 \
+    gettext-base \
+    && rm -rf /var/lib/apt/lists/*
 
-# Crear directorios
-RUN mkdir -p /var/log/icecast /etc/icecast /var/run/icecast
+# Copy configuration
+COPY icecast.xml /etc/icecast2/icecast.template.xml
 
-# Copiar configuración
-COPY icecast.xml /etc/icecast/icecast.xml
+# Create mount point for logs
+VOLUME ["/var/log/icecast2"]
 
+# Expose the default Icecast port
 EXPOSE 8000
 
-# Ejecutar Icecast como root (el changeowner en XML hace el resto)
-CMD ["icecast", "-c", "/etc/icecast/icecast.xml"]
+# Copy and set permissions for the startup script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Run the startup script
+CMD ["/start.sh"]

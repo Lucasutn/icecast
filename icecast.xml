@@ -1,44 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <icecast>
-  <location>Railway Streaming</location>
-  <admin>admin@railway.com</admin>
+    <location>Earth</location>
+    <admin>icemaster@example.com</admin>
 
-  <limits>
-    <clients>50</clients>
-    <sources>5</sources>
-  </limits>
+    <limits>
+        <clients>100</clients>
+        <sources>2</sources>
+        <queue-size>524288</queue-size>
+        <client-timeout>30</client-timeout>
+        <header-timeout>15</header-timeout>
+        <source-timeout>10</source-timeout>
+        <burst-size>65535</burst-size>
+    </limits>
 
-  <authentication>
-    <source-password>${SOURCE_PASSWORD}</source-password>
-    <relay-password>${RELAY_PASSWORD}</relay-password>
-    <admin-user>admin</admin-user>
-    <admin-password>${ADMIN_PASSWORD}</admin-password>
-  </authentication>
+    <authentication>
+        <source-password>${ICECAST_SOURCE_PASSWORD}</source-password>
+        <relay-password>${ICECAST_RELAY_PASSWORD}</relay-password>
+        <admin-user>admin</admin-user>
+        <admin-password>${ICECAST_ADMIN_PASSWORD}</admin-password>
+    </authentication>
 
-  <hostname>0.0.0.0</hostname>
+    <hostname>${ICECAST_HOSTNAME}</hostname>
 
-  <listen-socket>
-    <port>8000</port>
-    <bind-address>0.0.0.0</bind-address>
-  </listen-socket>
+    <listen-socket>
+        <port>${ICECAST_PORT}</port>
+        <bind-address>0.0.0.0</bind-address>
+    </listen-socket>
 
-  <paths>
-    <basedir>/usr/share/icecast</basedir>
-    <logdir>/var/log/icecast</logdir>
-    <webroot>/usr/share/icecast/web</webroot>
-    <adminroot>/usr/share/icecast/admin</adminroot>
-  </paths>
+    <http-headers>
+        <header name="Access-Control-Allow-Origin" value="*" />
+    </http-headers>
 
-  <security>
-    <chroot>0</chroot>
-    <changeowner>
-      <user>nobody</user>
-      <group>nogroup</group>
-    </changeowner>
-  </security>
+    <mount>
+        <mount-name>/stream</mount-name>
+        <public>1</public>
+    </mount>
 
-  <logging>
-    <accesslog>-</accesslog>
-    <errorlog>-</errorlog>
-    <loglevel>3</loglevel>
-  </logging>
+    <fileserve>1</fileserve>
+
+    <paths>
+        <basedir>/usr/share/icecast2</basedir>
+        <logdir>/var/log/icecast2</logdir>
+        <webroot>/usr/share/icecast2/web</webroot>
+        <adminroot>/usr/share/icecast2/admin</adminroot>
+        <alias source="/" destination="/status.xsl"/>
+    </paths>
+
+    <logging>
+        <accesslog>access.log</accesslog>
+        <errorlog>error.log</errorlog>
+        <loglevel>3</loglevel>
+    </logging>
+
+    <security>
+        <chroot>0</chroot>
+    </security>
 </icecast>
