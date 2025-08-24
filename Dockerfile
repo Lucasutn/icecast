@@ -1,11 +1,15 @@
 FROM ubuntu:22.04
 
+# Avoid interactive prompts during installation
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install Icecast and required dependencies
 RUN apt-get update && apt-get install -y \
-    icecast2 \
     gettext-base \
+    icecast2 \
     mime-support \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "icecast2 icecast2/icecast-setup boolean false" | debconf-set-selections
 
 # Set up icecast user and permissions
 RUN mkdir -p /var/log/icecast2 && \
