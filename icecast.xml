@@ -23,7 +23,7 @@
     <hostname>${ICECAST_HOSTNAME}</hostname>
 
     <listen-socket>
-        <port>${ICECAST_PORT}</port>
+        <port>10000</port>
         <bind-address>0.0.0.0</bind-address>
     </listen-socket>
 

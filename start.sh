@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set default values for environment variables
-export ICECAST_PORT="${PORT:-8000}"
+export ICECAST_PORT="10000"
 export ICECAST_SOURCE_PASSWORD="${SOURCE_PASSWORD:-hackme}"
 export ICECAST_ADMIN_PASSWORD="${ADMIN_PASSWORD:-hackme}"
 export ICECAST_RELAY_PASSWORD="${RELAY_PASSWORD:-hackme}"

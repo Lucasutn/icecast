@@ -9,7 +9,13 @@ RUN apt-get update && apt-get install -y \
     icecast2 \
     mime-support \
     && rm -rf /var/lib/apt/lists/* \
-    && echo "icecast2 icecast2/icecast-setup boolean false" | debconf-set-selections
+    && echo "icecast2 icecast2/icecast-setup boolean false" | debconf-set-selections \
+    && mkdir -p /etc/icecast2 \
+    && chown -R icecast2:icecast /etc/icecast2 \
+    && mkdir -p /var/log/icecast2 \
+    && chown -R icecast2:icecast /var/log/icecast2 \
+    && touch /etc/mime.types \
+    && chown icecast2:icecast /etc/mime.types
 
 # Set up icecast user and permissions
 RUN mkdir -p /var/log/icecast2 && \
